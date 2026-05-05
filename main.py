@@ -5,7 +5,7 @@ pygame.init()
 
 font = pygame.font.SysFont("Georgia", 20)
 screen.fill((20, 20, 20))
-charg = font.render("Chargement en cours, patientez merci ...", True, (255, 255, 255))
+charg = font.render("Chargement en cours ...", True, (255, 255, 255))
 screen.blit(
     charg,
     (largeur // 2 - charg.get_width() // 2, hauteur // 2 - charg.get_height() // 2),
