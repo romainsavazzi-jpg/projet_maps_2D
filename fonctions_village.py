@@ -7,9 +7,9 @@ from configuration import screen, largeur, hauteur, size
 # -----------------------------
 # Paramètres de la grille et de l'affichage
 # -----------------------------
-CELL_SIZE = 3  # Taille d'une case en pixels # 11 / 3
+CELL_SIZE = 3  # Taille d'une case en pixels (# 3 / 4 / 5 / 6 / 7 ) <- Valeurs de référence à tester si on veut avoir plusieurs apercus de rendus différents
 GRID_LENGTH = largeur // CELL_SIZE
-GRID_HEIGHT = hauteur // CELL_SIZE  # Taille de la grille (50x50) # 60 / 250
+GRID_HEIGHT = hauteur // CELL_SIZE  # Taille de la grille (Anciennement (50x50) # 60 / 250 mais adaptée pour être redimensionnée en fonction de la taille de la fenêtre de l'utilisateur)
 
 
 WIDTH = GRID_LENGTH * CELL_SIZE
@@ -356,7 +356,8 @@ def generate_trees():
 # -----------------------------
 # Fonction : vérifie si un champ limite_y x limite_x peut être placé
 # -----------------------------
-
+# Note : On n'utilise pas les fonctions créant des champs au final car le rendu visuel n'était pas très satisfaisant
+# mais elles sont toujours à disposition si on veut voir ce qu'elles peuvent changer
 
 def can_place_crop(x, y, limite_x, limite_y):
     if (
@@ -378,15 +379,14 @@ def can_place_crop(x, y, limite_x, limite_y):
 # -----------------------------
 
 
-def generate_crops():
-    for x in range(GRID_HEIGHT):
+def generate_crops(zone_maisons):
+    for x in range(GRID_LENGTH):
         for y in range(GRID_HEIGHT):
+            if (x, y) in zone_maisons:
+                continue
             limite_y = random.randint(min_crop_size, max_crop_size)
             limite_x = random.randint(min_crop_size, max_crop_size)
-            if (
-                can_place_crop(x, y, limite_x, limite_y)
-                and random.random() < crop_chance
-            ):
+            if (can_place_crop(x, y, limite_x, limite_y) and random.random() < crop_chance):
                 for cx in range(limite_x):
                     for cy in range(limite_y):
                         if random.random() < 0.8:
@@ -416,7 +416,7 @@ def cases_dans_rayon(x, y, r):
 
 
 # cercle creux
-# PS : Cette fonction ne sert pas à part si on décide de changer la génération des murailles avce l'autre fonction pour
+# PS : Cette fonction ne sert pas à part si on décide de changer la génération des murailles avec l'autre fonction
 def cases_du_rayon(x, y, r):
     cases = []
     for dx in range(-r, r + 1):
@@ -437,7 +437,7 @@ def cases_du_rayon(x, y, r):
 # Fonction : Génère les murailles
 # -----------------------------
 
-
+# Cette fonction est une alternative pour générer les murailles
 # ATTENTION, CETTE METHODE MARCHE TRES BIEN MAIS NE PREND PAS EN COMPTE LE CAS TRES RARE OU LES TROIS CERCLES SE RENCONTRENT EN 1 POINT, MAIS PEUT ÊTRE UNE GENERATION + NATURELLE
 # def generate_murailles_et_zone_maisons(cx_puit, cy_puit, cx_eglise, cy_eglise, cx_batiment, cy_batiment):
 #     disque_puit = set(cases_dans_rayon(cx_puit, cy_puit, int(0.25 * GRID_HEIGHT)))
@@ -520,7 +520,7 @@ def generate_village():
         cx_puit, cy_puit, cx_eglise, cy_eglise, cx_batiment, cy_batiment
     )
     generate_houses(zone_maisons)  # maisons le long des routes
-    # generate_crops()  # Champs de culture
+    # generate_crops(zone_maisons)  # Champs de culture
     generate_trees()  # arbres décoratifs
     return grid
 
@@ -528,7 +528,7 @@ def generate_village():
 # -----------------------------
 # Fonction : dessin à l'écran
 # -----------------------------
-def dessin_carte():
+def dessine_carte_village():
     for x in range(GRID_LENGTH):
         for y in range(GRID_HEIGHT):
             rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
@@ -618,11 +618,12 @@ def regenerer_village():
 
 # ------------------------------------------------------------------------------------------------------------------------------
 # Algorithme A* :
-
+# Il n'est pas directement utilisé mais en décommentant les lignes 514 et 515 du programme (dans la fonction generate_village() les 2 appels de remplace_chemin_plus_court())
+# On peut avoir un autre rendu avec les 3 bâtiments d'influence reliés entre eux par A*
 
 def cheminPlusCourt(grille, depart, objectif):
     """
-    A* sur la grille. depart et objectif sont des tuples (x, y).
+    A* sur grille. depart et objectif sont des tuples (x, y).
     Retourne une liste de tuples (x, y) formant le chemin, ou [] si aucun chemin.
     """
 
@@ -646,10 +647,15 @@ def cheminPlusCourt(grille, depart, objectif):
             while u in parent:
                 chemin.append(u)
                 u = parent[u]
+            # -----------
+            # Dans cette configuration, on ne prend pas dans le chemin les cases de départ et d'arrivée par des routes
+            # Si on commente chemin.pop(0) et qu'on décommente chemin.append(depart), on les prend en compte
+
             chemin.pop(0)
-            # chemin.pop(1)
+            # chemin.append(depart)
+
+            #------------
             chemin.reverse()
-            chemin.pop(0)
             return chemin
 
         x, y = u
@@ -676,7 +682,7 @@ def cheminPlusCourt(grille, depart, objectif):
                 compteur += 1
                 heapq.heappush(open_list, (priorite, compteur, v))
                 parent[v] = u
-    print("Pas de chemin")
+    # print("Pas de chemin")
     return []  # Aucun chemin trouvé
 
 

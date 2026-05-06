@@ -577,7 +577,10 @@ def dessin_maison():
     mcx, mcy = mx - CANVAS_X, my - CANVAS_Y
 
     for event in _events:
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                _house = House()
+        if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
 
             for bkey, brect in _btn_rects.items():
                 if brect.collidepoint(mx, my):

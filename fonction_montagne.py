@@ -138,28 +138,49 @@ def spirale_dessin():
     return spirale(rayon_max)
 
 
-matrice_montagne = spirale_dessin()
-
-
 def créa_spirale():
+    matrice_montagne = spirale_dessin()
     biomes = {}
     for q, r in matrice_montagne:
         if (q, r) == (0, 0):
             biomes[(q, r)] = ROCHE
         else:
             biomes[(q, r)] = choisir_biome(q, r, biomes)
-    return biomes
+    return biomes, matrice_montagne
 
 
-biomes = créa_spirale()
+def genere_et_dessine_carte_montagne():
 
-carte_montagne.fill(background)
-for i in range(len(matrice_montagne)):
-    q, r = matrice_montagne[i]
-    x = largeur_hex * (q + r / 2)
-    y = hauteur_hex * r
-    couleur = palette[biomes[(q, r)]]
-    draw_hexagon(carte_montagne, couleur, (centre_x + x, centre_y + y), taille_hex)
+    biomes, matrice_montagne = créa_spirale()
+
+    carte_montagne.fill(background)
+    for i in range(len(matrice_montagne)):
+        q, r = matrice_montagne[i]
+        x = largeur_hex * (q + r / 2)
+        y = hauteur_hex * r
+        couleur = palette[biomes[(q, r)]]
+        draw_hexagon(carte_montagne, couleur, (centre_x + x, centre_y + y), taille_hex)
+
+    Titre = font_titre.render("MONTAGNE GÉNÉRÉE PAR INFLUENCE DES VOISINS", True, BLACK)
+    largeur_titre, hauteur_titre = Titre.get_size()
+    pygame.draw.rect(
+        screen,
+        BLACK,
+        (Titre_x - 7, Titre_y - 7, largeur_titre + 16, hauteur_titre + 16),
+    )
+    pygame.draw.rect(
+        screen,
+        OMBRE,
+        (Titre_x - 6, Titre_y - 6, largeur_titre + 14, hauteur_titre + 14),
+    )
+    pygame.draw.rect(
+        screen,
+        PAPIER,
+        (Titre_x - 4, Titre_y - 4, largeur_titre + 10, hauteur_titre + 10),
+    )
+    screen.blit(Titre, (Titre_x, Titre_y))
+
+    pygame.display.set_caption("MAPS 2D Montagne")
 
 
 def dessin_montagne():
@@ -188,24 +209,3 @@ def dessin_montagne():
                 (mx + 15, my + 15, largeur_texte + 10, hauteur_texte + 10),
             )
             screen.blit(texte, (mx + 20, my + 20))
-
-    Titre = font_titre.render("MONTAGNE GÉNÉRÉE PAR INFLUENCE DES VOISINS", True, BLACK)
-    largeur_titre, hauteur_titre = Titre.get_size()
-    pygame.draw.rect(
-        screen,
-        BLACK,
-        (Titre_x - 7, Titre_y - 7, largeur_titre + 16, hauteur_titre + 16),
-    )
-    pygame.draw.rect(
-        screen,
-        OMBRE,
-        (Titre_x - 6, Titre_y - 6, largeur_titre + 14, hauteur_titre + 14),
-    )
-    pygame.draw.rect(
-        screen,
-        PAPIER,
-        (Titre_x - 4, Titre_y - 4, largeur_titre + 10, hauteur_titre + 10),
-    )
-    screen.blit(Titre, (Titre_x, Titre_y))
-
-    pygame.display.set_caption("MAPS 2D Montagne")

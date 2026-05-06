@@ -167,7 +167,7 @@ def _nouvelle_grille():
     return derniere_valide
 
 
-grille_onde = _nouvelle_grille()
+# grille_onde = _nouvelle_grille()
 
 largeur_hex = math.sqrt(3) * TAILLE_HEX
 espacement_vert = 1.5 * TAILLE_HEX
@@ -177,7 +177,7 @@ CARTE_HAUT = int(espacement_vert * GRILLE_HAUT + TAILLE_HEX)
 carte_onde = pygame.Surface((CARTE_LARG, CARTE_HAUT))
 
 
-def dessin_onde():
+def genere_et_dessine_carte_onde(grille_onde):
     if grille_onde is None:
         return
     carte_onde.fill((0, 0, 0))
@@ -188,6 +188,28 @@ def dessin_onde():
             cy = int(y * espacement_vert + TAILLE_HEX)
             couleur = palette[grille_onde[y][x]]
             _draw_hexagon(carte_onde, couleur, (cx, cy), TAILLE_HEX)
+
+    Titre = font_titre.render("MONDE GÉNÉRÉ PAR PAQUETS D'ONDES", True, BLACK)
+    largeur_titre, hauteur_titre = Titre.get_size()
+    pygame.draw.rect(
+        screen,
+        BLACK,
+        (Titre_x - 7, Titre_y - 7, largeur_titre + 16, hauteur_titre + 16),
+    )
+    pygame.draw.rect(
+        screen,
+        OMBRE,
+        (Titre_x - 6, Titre_y - 6, largeur_titre + 14, hauteur_titre + 14),
+    )
+    pygame.draw.rect(
+        screen,
+        PAPIER,
+        (Titre_x - 4, Titre_y - 4, largeur_titre + 10, hauteur_titre + 10),
+    )
+    screen.blit(Titre, (Titre_x, Titre_y))
+
+
+def dessin_onde():
     ox = (largeur - CARTE_LARG) // 2
     oy = (hauteur - CARTE_HAUT) // 2
     screen.fill((0, 0, 0))
@@ -217,25 +239,6 @@ def dessin_onde():
                 (mx + 15, my + 15, largeur_texte + 10, hauteur_texte + 10),
             )
             screen.blit(texte, (mx + 20, my + 20))
-
-    Titre = font_titre.render("MONDE GÉNÉRÉ PAR PAQUETS D'ONDES", True, BLACK)
-    largeur_titre, hauteur_titre = Titre.get_size()
-    pygame.draw.rect(
-        screen,
-        BLACK,
-        (Titre_x - 7, Titre_y - 7, largeur_titre + 16, hauteur_titre + 16),
-    )
-    pygame.draw.rect(
-        screen,
-        OMBRE,
-        (Titre_x - 6, Titre_y - 6, largeur_titre + 14, hauteur_titre + 14),
-    )
-    pygame.draw.rect(
-        screen,
-        PAPIER,
-        (Titre_x - 4, Titre_y - 4, largeur_titre + 10, hauteur_titre + 10),
-    )
-    screen.blit(Titre, (Titre_x, Titre_y))
 
 
 def regenerer_wfc():

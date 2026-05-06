@@ -174,10 +174,8 @@ def spirale_dessin():
     return spirale(rayon_max)
 
 
-matrice_monde = spirale_dessin()
-
-
 def créa_spirale():
+    matrice_monde = spirale_dessin()
     # Choix des couleurs
     biomes = {}
     for q, r in matrice_monde:
@@ -185,49 +183,20 @@ def créa_spirale():
             biomes[(q, r)] = random.randint(0, 1)
         else:
             biomes[(q, r)] = choisir_biome(q, r, biomes)
-    return biomes
+    return biomes, matrice_monde
 
 
-biomes = créa_spirale()
+def genere_et_dessine_carte_monde():
 
-carte_monde.fill(background)
-for i in range(len(matrice_monde)):
-    q, r = matrice_monde[i]
-    x = largeur_hex * (q + r / 2)
-    y = hauteur_hex * r
-    couleur = palette[biomes[(q, r)]]
-    draw_hexagon(carte_monde, couleur, (centre_x + x, centre_y + y), taille_hex)
+    biomes, matrice_monde = créa_spirale()
 
-
-def dessin_monde():
-    screen.blit(carte_monde, (0, 0))  # on colle la carte précalculée sur l'écran
-
-    # AFFICHER LE BIOME
-
-    mx, my = pygame.mouse.get_pos()  # position de la souris
-    couleur_pixel = carte_monde.get_at((mx, my))[:3]
-    # Code RGB du pixel
-
-    for i in palette:
-        if couleur_pixel == palette[i]:
-            texte = font.render(noms_biomes[i], True, BLACK)
-            largeur_texte, hauteur_texte = texte.get_size()
-            pygame.draw.rect(
-                screen,
-                BLACK,
-                (mx + 12, my + 12, largeur_texte + 16, hauteur_texte + 16),
-            )
-            pygame.draw.rect(
-                screen,
-                OMBRE,
-                (mx + 13, my + 13, largeur_texte + 14, hauteur_texte + 14),
-            )
-            pygame.draw.rect(
-                screen,
-                PAPIER,
-                (mx + 15, my + 15, largeur_texte + 10, hauteur_texte + 10),
-            )
-            screen.blit(texte, (mx + 20, my + 20))
+    carte_monde.fill(background)
+    for i in range(len(matrice_monde)):
+        q, r = matrice_monde[i]
+        x = largeur_hex * (q + r / 2)
+        y = hauteur_hex * r
+        couleur = palette[biomes[(q, r)]]
+        draw_hexagon(carte_monde, couleur, (centre_x + x, centre_y + y), taille_hex)
 
     # AFFICHER LE TITRE
 
@@ -286,3 +255,34 @@ def dessin_monde():
 
     caption = "MAPS 2D Monde"
     pygame.display.set_caption(caption)
+
+
+def dessin_monde():
+    screen.blit(carte_monde, (0, 0))  # on colle la carte précalculée sur l'écran
+
+    # AFFICHER LE BIOME
+
+    mx, my = pygame.mouse.get_pos()  # position de la souris
+    couleur_pixel = carte_monde.get_at((mx, my))[:3]
+    # Code RGB du pixel
+
+    for i in palette:
+        if couleur_pixel == palette[i]:
+            texte = font.render(noms_biomes[i], True, BLACK)
+            largeur_texte, hauteur_texte = texte.get_size()
+            pygame.draw.rect(
+                screen,
+                BLACK,
+                (mx + 12, my + 12, largeur_texte + 16, hauteur_texte + 16),
+            )
+            pygame.draw.rect(
+                screen,
+                OMBRE,
+                (mx + 13, my + 13, largeur_texte + 14, hauteur_texte + 14),
+            )
+            pygame.draw.rect(
+                screen,
+                PAPIER,
+                (mx + 15, my + 15, largeur_texte + 10, hauteur_texte + 10),
+            )
+            screen.blit(texte, (mx + 20, my + 20))

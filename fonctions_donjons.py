@@ -263,7 +263,7 @@ def nouvelle_map():
     return g
 
 
-grille = nouvelle_map()
+# grille = nouvelle_map()
 
 
 def dessiner_donjon():

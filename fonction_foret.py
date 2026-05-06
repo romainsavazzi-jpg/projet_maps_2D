@@ -137,56 +137,28 @@ def spirale_dessin():
     return spirale(rayon_max)
 
 
-matrice_foret = spirale_dessin()
-
-
 def créa_spirale():
+    matrice_foret = spirale_dessin()
     biomes = {}
     for q, r in matrice_foret:
         if (q, r) == (0, 0):
             biomes[(q, r)] = FORET_DENSE
         else:
             biomes[(q, r)] = choisir_biome(q, r, biomes)
-    return biomes
+    return biomes, matrice_foret
 
 
-biomes = créa_spirale()
+def genere_et_dessine_carte_foret():
 
-carte_foret.fill(background)
-for i in range(len(matrice_foret)):
-    q, r = matrice_foret[i]
-    x = largeur_hex * (q + r / 2)
-    y = hauteur_hex * r
-    couleur = palette[biomes[(q, r)]]
-    draw_hexagon(carte_foret, couleur, (centre_x + x, centre_y + y), taille_hex)
+    biomes, matrice_foret = créa_spirale()
 
-
-def dessin_foret():
-    screen.blit(carte_foret, (0, 0))
-
-    mx, my = pygame.mouse.get_pos()
-    couleur_pixel = carte_foret.get_at((mx, my))[:3]
-
-    for i in palette:
-        if couleur_pixel == palette[i]: 
-            texte = font.render(noms_biomes[i], True, BLACK)
-            largeur_texte, hauteur_texte = texte.get_size()
-            pygame.draw.rect(
-                screen,
-                BLACK,
-                (mx + 12, my + 12, largeur_texte + 16, hauteur_texte + 16),
-            )
-            pygame.draw.rect(
-                screen,
-                OMBRE,
-                (mx + 13, my + 13, largeur_texte + 14, hauteur_texte + 14),
-            )
-            pygame.draw.rect(
-                screen,
-                PAPIER,
-                (mx + 15, my + 15, largeur_texte + 10, hauteur_texte + 10),
-            )
-            screen.blit(texte, (mx + 20, my + 20))
+    carte_foret.fill(background)
+    for i in range(len(matrice_foret)):
+        q, r = matrice_foret[i]
+        x = largeur_hex * (q + r / 2)
+        y = hauteur_hex * r
+        couleur = palette[biomes[(q, r)]]
+        draw_hexagon(carte_foret, couleur, (centre_x + x, centre_y + y), taille_hex)
 
     Titre = font_titre.render("FORÊT GÉNÉRÉE PAR INFLUENCE DES VOISINS", True, BLACK)
     largeur_titre, hauteur_titre = Titre.get_size()
@@ -208,3 +180,31 @@ def dessin_foret():
     screen.blit(Titre, (Titre_x, Titre_y))
 
     pygame.display.set_caption("MAPS 2D Forêt")
+
+
+def dessin_foret():
+    screen.blit(carte_foret, (0, 0))
+
+    mx, my = pygame.mouse.get_pos()
+    couleur_pixel = carte_foret.get_at((mx, my))[:3]
+
+    for i in palette:
+        if couleur_pixel == palette[i]:
+            texte = font.render(noms_biomes[i], True, BLACK)
+            largeur_texte, hauteur_texte = texte.get_size()
+            pygame.draw.rect(
+                screen,
+                BLACK,
+                (mx + 12, my + 12, largeur_texte + 16, hauteur_texte + 16),
+            )
+            pygame.draw.rect(
+                screen,
+                OMBRE,
+                (mx + 13, my + 13, largeur_texte + 14, hauteur_texte + 14),
+            )
+            pygame.draw.rect(
+                screen,
+                PAPIER,
+                (mx + 15, my + 15, largeur_texte + 10, hauteur_texte + 10),
+            )
+            screen.blit(texte, (mx + 20, my + 20))
